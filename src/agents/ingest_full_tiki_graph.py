@@ -1,12 +1,19 @@
 import pandas as pd
 from neo4j import GraphDatabase
 import os
+from dotenv import load_dotenv
+load_dotenv() 
 
 # connect Docker Neo4j
 URI = os.getenv("URI")
 AUTH_USERNAME = os.getenv("AUTH_USERNAME")
 AUTH_PASSWORD = os.getenv("AUTH_PASSWORD")
 AUTH = (AUTH_USERNAME, AUTH_PASSWORD)
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+env_path = os.path.join(BASE_DIR, '.env')
+load_dotenv(dotenv_path=env_path)
+
 
 class TikiEnterpriseGraph:
     def __init__(self, uri, auth):
@@ -152,11 +159,10 @@ class TikiEnterpriseGraph:
                 print(f"+ Creating a connection [:{rel_name}]: {i} -> {i + len(batch)} / {total}")
                 
 if __name__ == "__main__":
-    DATA_FOLDER = './data' 
+    DATA_FOLDER = os.path.join(BASE_DIR, 'data'
     
     graph_db = TikiEnterpriseGraph(URI, AUTH)
     graph_db.prepare_database()
     graph_db.ingest_nodes(DATA_FOLDER)
     graph_db.ingest_relationships(DATA_FOLDER)
     graph_db.close()
-    
