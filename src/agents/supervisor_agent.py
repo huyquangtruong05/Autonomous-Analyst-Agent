@@ -7,6 +7,9 @@ from pydantic import BaseModel, Field
 from langgraph.graph import StateGraph, START, END
 from langgraph.graph.message import add_messages
 from dotenv import load_dotenv
+from cypher_agent import cypher_agent_node
+from graph_rag_agent import graph_rag_agent_node
+
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 env_path = os.path.join(BASE_DIR, '.env')
@@ -16,28 +19,18 @@ class AgentState(TypedDict):
     messages: Annotated[Sequence[BaseMessage], add_messages]
     next_steps: List[str] 
 
-def cypher_agent_node(state: AgentState):
-    print("   [ Đang chạy Cypher Agent - Xử lý logic số liệu...]")
-    response = AIMessage(content="[Cypher Agent]: Hệ thống hiện có 5,000 sản phẩm và 4,705 nhà bán hàng.")
-    return {"messages": [response]}
-
-def graph_rag_agent_node(state: AgentState):
-    print("   [ Đang chạy GraphRAG Agent - Xử lý ngữ nghĩa vector...]")
-    response = AIMessage(content="[GraphRAG Agent]: Phân tích review cho thấy 80% khách hàng chê sản phẩm giá rẻ vì lỗi móp méo hộp.")
-    return {"messages": [response]}
-
 class RouteDecision(BaseModel):
     next_steps: List[Literal["cypher_agent", "graph_rag_agent", "FINISH"]] = Field(
         description="""Quyết định linh hoạt:
-        - Trả về ['cypher_agent'] nếu chỉ hỏi 1 vế về số liệu, đếm, tính tổng.
-        - Trả về ['graph_rag_agent'] nếu chỉ hỏi 1 vế về lý do, cảm xúc, review.
-        - Trả về ['cypher_agent', 'graph_rag_agent'] nếu câu hỏi chứa 2 vế đòi hỏi CẢ 2 chuyên môn.
-        - Trả về ['FINISH'] nếu là câu chào hỏi."""
+        - ['cypher_agent']: Hỏi về số liệu, đếm, tính tổng, giá cả, nhà bán hàng, danh mục.
+        - ['graph_rag_agent']: Hỏi về lý do, đánh giá, review, cảm xúc khách hàng.
+        - ['cypher_agent', 'graph_rag_agent']: Câu hỏi có cả 2 ý trên.
+        - ['FINISH']: Câu chào hỏi bình thường."""
     )
-    reasoning: str = Field(description="Lý do tại sao lại phân phối công việc như vậy.")
+    reasoning: str = Field(description="Lý do phân bổ công việc.")
+
 
 def supervisor_node(state: AgentState):
-    print("\n [SUPERVISOR ĐANG SUY NGHĨ...]")
     
     llm = ChatGroq(model="llama-3.3-70b-versatile", temperature=0)
     structured_llm = llm.with_structured_output(RouteDecision)
@@ -55,8 +48,6 @@ def supervisor_node(state: AgentState):
     
     decision = (prompt | structured_llm).invoke({"messages": state["messages"]})
     
-    print(f"   => Quyết định: Giao cho {decision.next_steps}")
-    print(f"   => Lý do: {decision.reasoning}")
     
     if "FINISH" in decision.next_steps:
         normal_response = llm.invoke(state["messages"])
@@ -73,6 +64,7 @@ workflow.add_node("graph_rag_agent", graph_rag_agent_node)
 def route_step(state: AgentState):
     if "FINISH" in state["next_steps"]:
         return END
+    # if both agents are needed, we can run them in parallel and then merge results at the end
     return state["next_steps"]
 
 workflow.add_edge(START, "supervisor")
@@ -93,14 +85,6 @@ def chat_with_system(user_query: str):
         print(f"  {msg.content}")
 
 if __name__ == "__main__":
-    # Test Case 1: Chỉ cần 1 Agent Số liệu
-    chat_with_system("Hệ thống hiện tại có bao nhiêu nhà bán hàng?")
     
-    # Test Case 2: Chỉ cần 1 Agent Ngữ nghĩa
-    chat_with_system("Tại sao mọi người hay phàn nàn về sản phẩm này?")
+    chat_with_system("Có bao nhiêu sản phẩm trên hệ thống, và tại sao hàng giá cao hay bị khen?")
     
-    # Test Case 3: Cần CẢ 2 Agent song song
-    chat_with_system("Có bao nhiêu sản phẩm trên hệ thống, và tại sao hàng giá rẻ hay bị chê?")
-    
-    # Test Case 4: Không cần Agent nào
-    chat_with_system("Hi!")
