@@ -17,7 +17,7 @@ graph = Neo4jGraph(
     password=os.getenv("AUTH_PASSWORD")
 )
 
-# llm adnd chain
+# llm and chain
 llm = ChatGroq(model="llama-3.3-70b-versatile", temperature=0)
 
 # CYPHER LLM 
