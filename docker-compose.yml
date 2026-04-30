@@ -1,0 +1,35 @@
+version: "3.9"
+
+services:
+  backend:
+    build: .
+    container_name: fastapi_app
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      - PYTHONPATH=/app
+    volumes:
+      - .:/app
+    depends_on:
+      - neo4j
+    restart: always
+
+  neo4j:
+    image: neo4j:5
+    container_name: neo4j-tiki
+    ports:
+      - "7474:7474" # browser UI
+      - "7687:7687" # bolt protocol
+    environment:
+      NEO4J_AUTH: neo4j/123456789
+      NEO4J_PLUGINS: '["apoc"]'
+      NEO4J_dbms_security_procedures_unrestricted: apoc.*
+      NEO4J_dbms_security_procedures_allowlist: apoc.*
+    volumes:
+      - neo4j_data:/data
+    restart: always
+
+volumes:
+  neo4j_data:
