@@ -7,8 +7,8 @@ from pydantic import BaseModel, Field
 from langgraph.graph import StateGraph, START, END
 from langgraph.graph.message import add_messages
 from dotenv import load_dotenv
-from cypher_agent import cypher_agent_node
-from graph_rag_agent import graph_rag_agent_node
+from src.agents.cypher_agent import cypher_agent_node
+from src.agents.graph_rag_agent import graph_rag_agent_node
 
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -80,11 +80,12 @@ def chat_with_system(user_query: str):
     inputs = {"messages": [HumanMessage(content=user_query)]}
     final_state = app.invoke(inputs, config={"recursion_limit": 5})
             
-    print("\n KẾT QUẢ TỔNG HỢP:")
+    print("\n AI RESPONSE:")
+    
+    responses = []
     for msg in final_state['messages'][1:]: 
         print(f"  {msg.content}")
+        responses.append(msg.content)
 
-if __name__ == "__main__":
-    
-    chat_with_system("Có bao nhiêu sản phẩm trên hệ thống, và tại sao hàng giá cao hay bị khen?")
+    return " ".join(responses)   
     

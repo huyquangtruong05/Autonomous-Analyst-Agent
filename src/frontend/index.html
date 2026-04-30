@@ -3,236 +3,95 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>Autonomous Analyst Agent | AI-Powered Data Analysis</title>
-  <!-- Google Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap"
-    rel="stylesheet">
-  <!-- Font Awesome 6 -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <!-- External CSS -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Autonomous Analyst Agent</title>
   <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-  <div id="app">
-    <!-- Landing Page -->
-    <div id="landing-page">
-      <!-- Navbar -->
-      <nav class="navbar">
-        <div class="container">
-          <a href="#" class="logo">
-            <i class="fas fa-robot"></i> Analyst<span class="accent-text">Agent</span>
-          </a>
-          <ul class="nav-links">
-            <li><a href="#">Features</a></li>
-            <li><a href="#">Solutions</a></li>
-            <li><a href="#">Docs</a></li>
-            <li><a href="#" class="btn btn-outline" id="login-btn">Log In</a></li>
-            <li><a href="#" class="btn btn-primary" id="get-started-btn">Get Started Free</a></li>
-          </ul>
-        </div>
-      </nav>
 
-      <!-- Hero -->
-      <section class="hero">
-        <div class="container">
-          <div class="hero-content">
-            <h1>Autonomous AI Analyst for modern teams</h1>
-            <p>Unlock deep data insights, automated reports, and natural language queries — all without writing a single
-              line of code.</p>
-            <div class="hero-buttons">
-              <a href="#" class="btn btn-primary" id="hero-cta"><i class="fas fa-bolt"></i> Start for free</a>
-              <a href="#" class="btn btn-outline"><i class="fas fa-play"></i> Watch demo</a>
-            </div>
-          </div>
-          <div class="hero-visual">
-            <div class="agent-card">
-              <div class="agent-header">
-                <div class="agent-avatar"><i class="fas fa-brain"></i></div>
-                <div>
-                  <div class="agent-title">Autonomous Analyst</div>
-                  <div class="agent-sub">Active now</div>
-                </div>
-                <div class="pulse-dot"></div>
-              </div>
-              <div class="data-bars">
-                <div class="bar">
-                  <div class="bar-fill" style="width: 82%;"></div>
-                </div>
-                <div class="bar">
-                  <div class="bar-fill" style="width: 67%;"></div>
-                </div>
-                <div class="bar">
-                  <div class="bar-fill" style="width: 94%;"></div>
-                </div>
-              </div>
-              <div class="insight-box">
-                <i class="fas fa-lightbulb" style="color:#7c5cfc; margin-right:6px;"></i>
-                <strong>Insight:</strong> Q3 revenue up 23% driven by retargeting campaigns. Consider a 15% budget
-                increase.
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Features -->
-      <section class="section">
-        <div class="container">
-          <div class="section-header">
-            <h2>Powerful analysis, fully autonomous</h2>
-            <p>Our agent connects your data, analyzes it automatically, and returns actionable insights.</p>
-          </div>
-          <div class="features-grid">
-            <div class="feature-card">
-              <div class="feature-icon"><i class="fas fa-database"></i></div>
-              <h3>Multi-source connect</h3>
-              <p>Integrate SQL, Google Sheets, APIs, CSV in a few clicks. No data engineer required.</p>
-            </div>
-            <div class="feature-card">
-              <div class="feature-icon"><i class="fas fa-chart-line"></i></div>
-              <h3>Trend detection</h3>
-              <p>Automatically spot trends, seasonality, and anomalies in your data.</p>
-            </div>
-            <div class="feature-card">
-              <div class="feature-icon"><i class="fas fa-file-alt"></i></div>
-              <h3>Auto reporting</h3>
-              <p>Receive PDF, slide decks, or dashboards generated every morning.</p>
-            </div>
-            <div class="feature-card">
-              <div class="feature-icon"><i class="fas fa-language"></i></div>
-              <h3>Natural language</h3>
-              <p>Ask questions in plain English, the Agent queries and answers instantly.</p>
-            </div>
-            <div class="feature-card">
-              <div class="feature-icon"><i class="fas fa-shield-alt"></i></div>
-              <h3>Enterprise security</h3>
-              <p>End-to-end encryption, GDPR compliant, your data never leaves your control.</p>
-            </div>
-            <div class="feature-card">
-              <div class="feature-icon"><i class="fas fa-robot"></i></div>
-              <h3>Continuous learning</h3>
-              <p>The Agent improves over time based on your feedback and business context.</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- How It Works -->
-      <section class="section dark-bg">
-        <div class="container">
-          <div class="section-header">
-            <h2>How it works</h2>
-            <p>Deploy in 5 minutes, no technical team needed.</p>
-          </div>
-          <div class="steps">
-            <div class="step">
-              <div class="step-number">1</div>
-              <h4>Connect data</h4>
-              <p>Securely link your data sources.</p>
-            </div>
-            <div class="step">
-              <div class="step-number">2</div>
-              <h4>Ask questions</h4>
-              <p>Use natural language to request analysis.</p>
-            </div>
-            <div class="step">
-              <div class="step-number">3</div>
-              <h4>Get insights</h4>
-              <p>The Agent returns charts, tables, and action recommendations.</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Testimonials -->
-      <section class="section">
-        <div class="container">
-          <div class="section-header">
-            <h2>Trusted by data teams</h2>
-          </div>
-          <div class="testimonials-grid">
-            <div class="testimonial">
-              <p>"Autonomous Analyst Agent saves us 20 hours a week on reporting. The insights are incredibly accurate."
-              </p>
-              <div class="user">
-                <div class="user-avatar">MT</div>
-                <div><strong>Michael Tran</strong><br><span class="user-role">CDO, FinTech Corp</span></div>
-              </div>
-            </div>
-            <div class="testimonial">
-              <p>"For the first time, the marketing team can analyze data without relying on data engineers."</p>
-              <div class="user">
-                <div class="user-avatar">LH</div>
-                <div><strong>Linda Hoang</strong><br><span class="user-role">Marketing Lead</span></div>
-              </div>
-            </div>
-            <div class="testimonial">
-              <p>"Seamless integration, beautiful dark UI, and the AI responds like a real analyst."</p>
-              <div class="user">
-                <div class="user-avatar">QP</div>
-                <div><strong>Quan Pham</strong><br><span class="user-role">CTO, SaaS Startup</span></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- CTA -->
-      <section class="section">
-        <div class="container">
-          <div class="cta-section">
-            <h2>Ready to let your data work for you?</h2>
-            <p>Try free for 14 days, no credit card required.</p>
-            <a href="#" class="btn btn-primary btn-lg" id="cta-start"><i class="fas fa-rocket"></i> Get started now</a>
-          </div>
-        </div>
-      </section>
-
-      <!-- Footer -->
-      <footer class="footer container">
-        <span>© 2025 Autonomous Analyst Agent. All rights reserved.</span>
-        <span class="footer-links">
-          <a href="#">Privacy</a>
-          <a href="#">Terms</a>
-        </span>
-      </footer>
-    </div>
-
-    <!-- Chat Interface (hidden by default) -->
-    <div id="chat-container" class="chat-hidden">
-      <div class="chat-header">
-        <button class="back-btn" id="back-to-landing"><i class="fas fa-arrow-left"></i> Back</button>
-        <div class="chat-header-title">
-          <i class="fas fa-robot"></i> AI Analyst <span class="online-badge">Online</span>
-        </div>
-        <div></div> <!-- spacer -->
-      </div>
-      <div class="chat-messages" id="chat-messages">
-        <!-- Initial bot message -->
-        <div class="message bot">
-          <div class="message-content">
-            <div class="bot-icon"><i class="fas fa-robot"></i></div>
-            <div class="text">
-              <p>Hello! I'm your Autonomous Analyst Agent. I can analyze data, generate reports, and provide insights.
-                What would you like to know?</p>
-              <span class="time">Just now</span>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="chat-input-area">
-        <input type="text" id="user-input" placeholder="Ask a question about your data..." autocomplete="off">
-        <button id="send-btn"><i class="fas fa-paper-plane"></i></button>
+  <!-- Landing Page View -->
+  <div id="landing-view" class="view-active">
+    <div class="landing-content">
+      <h1>Autonomous Analyst Agent</h1>
+      <p>Deploy your intelligent partner for advanced data analysis and predictive modeling.</p>
+      <div class="action-buttons">
+        <button id="btn-open-login" class="btn primary">Login</button>
+        <button id="btn-open-register" class="btn secondary">Register</button>
       </div>
     </div>
   </div>
 
-  <!-- JS -->
+  <!-- Login Modal -->
+  <div id="login-modal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" id="close-login">&times;</span>
+      <h2>System Login</h2>
+      <form id="login-form">
+        <div class="input-group">
+          <label for="login-username">Username</label>
+          <!-- name="username" -->
+          <input type="text" id="login-username" name="username" required placeholder="Enter username">
+        </div>
+        <div class="input-group">
+          <label for="login-password">Password</label>
+          <!-- name="password" -->
+          <input type="password" id="login-password" name="password" required placeholder="Enter password">
+        </div>
+        <button type="submit" class="btn primary full-width">Authenticate</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Register Modal -->
+  <div id="register-modal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" id="close-register">&times;</span>
+      <h2>Create Agent Access</h2>
+      <form id="register-form">
+        <div class="input-group">
+          <label for="reg-username">Username</label>
+          <!-- name="username" -->
+          <input type="text" id="reg-username" name="username" required placeholder="Choose a username">
+        </div>
+        <div class="input-group">
+          <label for="reg-email">Email</label>
+          <!-- name="email" -->
+          <input type="email" id="reg-email" name="email" required placeholder="Enter your email">
+        </div>
+        <div class="input-group">
+          <label for="reg-password">Password</label>
+          <!-- name="password" -->
+          <input type="password" id="reg-password" name="password" required placeholder="Create a password">
+        </div>
+        <button type="submit" class="btn primary full-width">Initialize Protocol</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- AI Chat Interface View -->
+  <div id="chat-view" class="view-hidden">
+    <header class="chat-header">
+      <h2>System Terminal: Analyst Agent</h2>
+      <button id="btn-logout" class="btn outline small">Logout</button>
+    </header>
+
+    <div class="chat-container" id="chat-container">
+      <!-- Initial AI Greeting -->
+      <div class="message ai-message">
+        <div class="avatar">AI</div>
+        <div class="text">Authentication successful. Systems online. How can I assist with your analysis today?</div>
+      </div>
+    </div>
+
+    <div class="chat-input-wrapper">
+      <form id="chat-form">
+        <input type="text" id="chat-input" placeholder="Enter query or command..." required autocomplete="off">
+        <button type="submit" class="btn primary">Send</button>
+      </form>
+    </div>
+  </div>
+
   <script src="script.js"></script>
 </body>
 

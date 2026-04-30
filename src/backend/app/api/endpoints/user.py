@@ -1,15 +1,15 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-
-from app.models import models
-from app.schemas import schemas
-from app.db.session import SessionLocal
-from app.api.dependencies import get_db
-from app.schemas.schemas import Create_User, Login_User, Token
+from sqlalchemy import or_
+from src.backend.app.models import models
+from src.backend.app.schemas import schemas
+from src.backend.app.db.session import SessionLocal
+from src.backend.app.api.dependencies import get_db
+from src.backend.app.schemas.schemas import Create_User, Login_User, Token, Message
 
 
 # auth
-from app.auth.auth import hash_password, verify_password, create_access_token, SECRET_KEY, ALGORITHM
+from src.backend.app.auth.auth import hash_password, verify_password, create_access_token, SECRET_KEY, ALGORITHM
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm 
 from jose import JWTError, jwt
 
@@ -22,15 +22,19 @@ def create_user(
     user:Create_User,
     db:Session = Depends(get_db)
 ) : 
-    get_user_from_db = db.query(models.User).filter(models.User.username==user.username or models.User.email==user.email).first()
+    get_user_from_db = db.query(models.User).filter(or_(models.User.username==user.username, models.User.email==user.email)).first()
     if get_user_from_db :
+        if get_user_from_db.username == user.username:
+            detail_msg = "Username already exists"
+        else:
+            detail_msg = "Email already registered"
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="User already exists")
-    else :
-        new_user = models.User(username=user.username, email=user.email, password=hash_password(user.password))
-        db.add(new_user)
-        db.commit()
-        db.refresh(new_user) 
-        return new_user
+    
+    new_user = models.User(username=user.username, email=user.email, password=hash_password(user.password))
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user) 
+    return new_user
     
 # login user :
 @router.post("/login", response_model=Token, status_code=status.HTTP_200_OK) 
@@ -73,3 +77,5 @@ def get_current_user(token : str = Depends(oauth2_scheme)) :
 @router.get("/me")
 def read_users_me(current_user: str = Depends(get_current_user)) : 
     return {"username": current_user}
+
+

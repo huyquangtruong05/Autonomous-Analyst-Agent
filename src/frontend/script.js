@@ -1,123 +1,255 @@
 document.addEventListener("DOMContentLoaded", () => {
-  // DOM elements
-  const landingPage = document.getElementById("landing-page");
+  // dom elements
+  const landingView = document.getElementById("landing-view");
+  const chatView = document.getElementById("chat-view");
+
+  const loginModal = document.getElementById("login-modal");
+  const registerModal = document.getElementById("register-modal");
+
+  const btnOpenLogin = document.getElementById("btn-open-login");
+  const btnOpenRegister = document.getElementById("btn-open-register");
+  const closeLogin = document.getElementById("close-login");
+  const closeRegister = document.getElementById("close-register");
+
+  const loginForm = document.getElementById("login-form");
+  const registerForm = document.getElementById("register-form");
+  const btnLogout = document.getElementById("btn-logout");
+
+  const chatForm = document.getElementById("chat-form");
+  const chatInput = document.getElementById("chat-input");
   const chatContainer = document.getElementById("chat-container");
-  const loginBtn = document.getElementById("login-btn");
-  const getStartedBtn = document.getElementById("get-started-btn");
-  const heroCta = document.getElementById("hero-cta");
-  const ctaStart = document.getElementById("cta-start");
-  const backBtn = document.getElementById("back-to-landing");
-  const userInput = document.getElementById("user-input");
-  const sendBtn = document.getElementById("send-btn");
-  const chatMessages = document.getElementById("chat-messages");
 
-  landingPage.style.display = "block";
-  chatContainer.style.display = "none";
+  // config URL Backend
+  const BASE_URL = "http://localhost:8000";
 
-  // Function to switch to chat view
-  function openChat() {
-    landingPage.style.display = "none";
-    chatContainer.style.display = "flex";
-    setTimeout(() => userInput.focus(), 100);
-  }
+  // close/open modal
+  const openModal = (modal) => {
+    modal.style.display = "flex";
+  };
+  const closeModal = (modal) => {
+    modal.style.display = "none";
+  };
 
-  // Function to go back to landing
-  function closeChat() {
-    chatContainer.style.display = "none";
-    landingPage.style.display = "block";
-  }
+  btnOpenLogin.addEventListener("click", () => openModal(loginModal));
+  btnOpenRegister.addEventListener("click", () => openModal(registerModal));
+  closeLogin.addEventListener("click", () => closeModal(loginModal));
+  closeRegister.addEventListener("click", () => closeModal(registerModal));
 
-  [loginBtn, getStartedBtn, heroCta, ctaStart].forEach((btn) => {
-    if (btn) {
-      btn.addEventListener("click", (e) => {
-        e.preventDefault();
-        openChat();
+  window.addEventListener("click", (e) => {
+    if (e.target === loginModal) closeModal(loginModal);
+    if (e.target === registerModal) closeModal(registerModal);
+  });
+
+  // login automation (API /me)
+  const checkAuthAndAutoLogin = async () => {
+    const token = localStorage.getItem("ai_agent_token");
+    if (!token) return; // if no token, do nothing
+
+    try {
+      const response = await fetch(`${BASE_URL}/users/me`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
+
+      if (response.ok) {
+        const userData = await response.json();
+        console.log(`Auto-login successful! Hello: ${userData.username}`);
+
+        // if token valid, directly show chat view
+        landingView.classList.remove("view-active");
+        landingView.classList.add("view-hidden");
+
+        chatView.classList.remove("view-hidden");
+        chatView.classList.add("view-active");
+      } else {
+        // if token invalid/expired, remove it from storage
+        console.warn("Token expired or invalid. Removing from storage.");
+        localStorage.removeItem("ai_agent_token");
+      }
+    } catch (error) {
+      console.error("Error checking authentication:", error);
+    }
+  };
+
+  checkAuthAndAutoLogin();
+
+  // Register (API /register - JSON)
+  registerForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const formData = new FormData(registerForm);
+    const data = Object.fromEntries(formData.entries());
+
+    try {
+      const response = await fetch(`${BASE_URL}/users/register`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (response.ok) {
+        // successfully registered, now auto-login the user
+        closeModal(registerModal);
+
+        landingView.classList.remove("view-active");
+        landingView.classList.add("view-hidden");
+
+        chatView.classList.remove("view-hidden");
+        chatView.classList.add("view-active");
+
+        registerForm.reset();
+
+        try {
+          const result = await response.json();
+          console.log("success register:", result);
+        } catch (err) {
+          console.log("Register successful (Backend returned status 201).");
+        }
+      } else {
+        const errorData = await response.json();
+        const errorMessage =
+          errorData.detail || errorData.message || "Register failed.";
+        alert(`Error: ${errorMessage}`);
+      }
+    } catch (error) {
+      console.error("Error connection:", error);
     }
   });
 
-  if (backBtn) {
-    backBtn.addEventListener("click", closeChat);
-  }
+  // login (API /login - Form URL Encoded)
+  loginForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-  // Chat
-  function addMessage(text, sender) {
-    const messageDiv = document.createElement("div");
-    messageDiv.classList.add("message", sender);
-    const now = new Date();
-    const timeStr = now.toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
+    // collect form data and convert to URL-encoded string
+    const formData = new FormData(loginForm);
+    const urlEncodedData = new URLSearchParams(formData).toString();
 
-    if (sender === "bot") {
-      messageDiv.innerHTML = `
-                <div class="message-content">
-                    <div class="bot-icon"><i class="fas fa-robot"></i></div>
-                    <div class="text">
-                        <p>${text}</p>
-                        <span class="time">${timeStr}</span>
-                    </div>
-                </div>
-            `;
-    } else {
-      messageDiv.innerHTML = `
-                <div class="message-content">
-                    <div class="text">
-                        <p>${text}</p>
-                        <span class="time">${timeStr}</span>
-                    </div>
-                </div>
-            `;
-    }
-    chatMessages.appendChild(messageDiv);
-    chatMessages.scrollTop = chatMessages.scrollHeight;
-  }
+    try {
+      const response = await fetch(`${BASE_URL}/users/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: urlEncodedData,
+      });
 
-  function getAIResponse(userMessage) {
-    const lowerMsg = userMessage.toLowerCase();
-    if (lowerMsg.includes("revenue") || lowerMsg.includes("doanh thu")) {
-      return "Based on the latest quarter, revenue increased by 18% YoY. The main drivers were the new product line and improved customer retention. I'd recommend reallocating budget toward top-performing channels.";
-    } else if (lowerMsg.includes("trend") || lowerMsg.includes("xu hướng")) {
-      return "I've detected an upward trend in user engagement over the last 30 days. Mobile usage is up 34%, suggesting we should prioritize mobile experience improvements.";
-    } else if (lowerMsg.includes("report") || lowerMsg.includes("báo cáo")) {
-      return "I can generate a full performance report for you. It will cover KPIs, cohort analysis, and forecasting. Would you like me to send it as a PDF or share a live dashboard?";
-    } else if (
-      lowerMsg.includes("hello") ||
-      lowerMsg.includes("hi") ||
-      lowerMsg.includes("hey")
-    ) {
-      return "Hello! I'm ready to analyze your data. You can ask about revenue, trends, or request a report.";
-    } else {
-      return "Interesting question. Let me pull the relevant data… Based on the current dataset, I see a 12% improvement in conversion rates after the last campaign. Would you like a deeper drill-down by region?";
-    }
-  }
+      if (response.ok) {
+        const result = await response.json();
 
-  function handleSendMessage() {
-    const message = userInput.value.trim();
-    if (message === "") return;
-    addMessage(message, "user");
-    userInput.value = "";
-    setTimeout(() => {
-      const reply = getAIResponse(message);
-      addMessage(reply, "bot");
-    }, 800);
-  }
+        // save token to localStorage for future authenticated requests
+        localStorage.setItem("ai_agent_token", result.access_token);
+        console.log("Login successful! Token saved.");
 
-  sendBtn.addEventListener("click", handleSendMessage);
-  userInput.addEventListener("keypress", (e) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      handleSendMessage();
+        // close modal and show chat view
+        closeModal(loginModal);
+
+        landingView.classList.remove("view-active");
+        landingView.classList.add("view-hidden");
+
+        chatView.classList.remove("view-hidden");
+        chatView.classList.add("view-active");
+
+        loginForm.reset();
+      } else {
+        const errorData = await response.json();
+        const errorMessage = errorData.detail || "Invalid login information.";
+        alert(errorMessage);
+      }
+    } catch (error) {
+      console.error("Network error:", error);
+      alert("Cannot connect to the server. Please check the backend.");
     }
   });
 
-  const bars = document.querySelectorAll(".bar-fill");
-  bars.forEach((bar) => {
-    const width = bar.style.width;
-    bar.style.width = "0%";
-    setTimeout(() => {
-      bar.style.width = width;
-    }, 400);
+  // logout
+  btnLogout.addEventListener("click", () => {
+    // Remove Token from browser storage
+    localStorage.removeItem("ai_agent_token");
+    console.log("Logged out.");
+
+    // Go back to Landing Page
+    chatView.classList.remove("view-active");
+    chatView.classList.add("view-hidden");
+
+    landingView.classList.remove("view-hidden");
+    landingView.classList.add("view-active");
+
+    // Clear data on forms
+    loginForm.reset();
+    registerForm.reset();
   });
+
+  // CHAT - API /messages/send_message
+  chatForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const messageText = chatInput.value.trim();
+    if (!messageText) return;
+
+    // display user message immediately for better UX
+    appendMessage("user", messageText);
+    chatInput.value = "";
+
+    // get token from localStorage to authenticate API request
+    const token = localStorage.getItem("ai_agent_token");
+    if (!token) {
+      appendMessage(
+        "ai",
+        "[System Error]: Trying to send message without authentication. Please log in again.",
+      );
+      return;
+    }
+
+    try {
+      // send message to BE API
+      const response = await fetch(`${BASE_URL}/messages/send_message`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ content: messageText }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+
+        // receive AI response and display in chat
+        const aiResponse = data.content;
+
+        appendMessage("ai", aiResponse);
+      } else {
+        const errorData = await response.json();
+        appendMessage(
+          "ai",
+          `[System Error]: ${errorData.detail || "Cannot analyze data."}`,
+        );
+      }
+    } catch (error) {
+      console.error("Error calling chat API:", error);
+      appendMessage(
+        "ai",
+        "[System Error]: Cannot connect to the server. Please check the backend.",
+      );
+    }
+  });
+
+  function appendMessage(sender, text) {
+    const msgDiv = document.createElement("div");
+    msgDiv.classList.add("message", `${sender}-message`);
+
+    const avatar = sender === "ai" ? "AI" : "U";
+
+    msgDiv.innerHTML = `
+      <div class="avatar">${avatar}</div>
+      <div class="text">${text}</div>
+    `;
+
+    chatContainer.appendChild(msgDiv);
+
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+  }
 });

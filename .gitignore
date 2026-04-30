@@ -3,6 +3,6 @@ data/
 venv/
 __pycache__/
 
-
-
-# Ignore the following files
+# ignore database files
+*.db
+*.pyc
