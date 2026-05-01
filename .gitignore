@@ -1,8 +1,10 @@
-data/
-.env
 venv/
+.venv/
+env/
+neo4j_data/
 __pycache__/
-
-# ignore database files
-*.db
 *.pyc
+*.pyo
+*.pyd
+.git/
+.env

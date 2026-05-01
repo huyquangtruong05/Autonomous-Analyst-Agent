@@ -1,35 +1,52 @@
-version: "3.9"
+version: "3.8"
 
 services:
-  backend:
+  # NEO4J
+  neo4j:
+    image: neo4j:5.20.0
+    container_name: tiki_neo4j
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    environment:
+      # get username & password from .env file, if not set, use default values
+      - NEO4J_AUTH=${AUTH_USERNAME:-neo4j}/${AUTH_PASSWORD:-123456789}
+      - NEO4J_PLUGINS=["apoc"]
+    volumes:
+      # save data persistently on the host machine
+      - ./neo4j_data:/data
+    networks:
+      - tiki_ai_network
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "wget --no-verbose --tries=1 --spider localhost:7474 || exit 1",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
+
+  # FASTAPI BACKEND
+  ai_backend:
     build: .
-    container_name: fastapi_app
+    container_name: tiki_fastapi_backend
+    depends_on:
+      neo4j:
+        condition: service_healthy
     ports:
       - "8000:8000"
     env_file:
       - .env
     environment:
-      - PYTHONPATH=/app
+      - URI=bolt://neo4j:7687
     volumes:
       - .:/app
-    depends_on:
-      - neo4j
-    restart: always
+    networks:
+      - tiki_ai_network
+    command: uvicorn src.backend.app.main:app --host 0.0.0.0 --port 8000 --reload
 
-  neo4j:
-    image: neo4j:5
-    container_name: neo4j-tiki
-    ports:
-      - "7474:7474" # browser UI
-      - "7687:7687" # bolt protocol
-    environment:
-      NEO4J_AUTH: neo4j/123456789
-      NEO4J_PLUGINS: '["apoc"]'
-      NEO4J_dbms_security_procedures_unrestricted: apoc.*
-      NEO4J_dbms_security_procedures_allowlist: apoc.*
-    volumes:
-      - neo4j_data:/data
-    restart: always
-
-volumes:
-  neo4j_data:
+networks:
+  tiki_ai_network:
+    driver: bridge
