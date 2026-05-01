@@ -67,7 +67,7 @@ Capabilities:
 - **FastAPI** – high-speed RESTful API  
 - **Uvicorn** – ASGI server for production performance  
 - **JWT (JSON Web Tokens)** – secure user authentication  
-- **HTML, CSS, JS** – interface user
+- **HTML, CSS, JS** – User Interface (UI)
 ---
 
 ### 🤖 AI & Orchestration
@@ -112,7 +112,7 @@ Capabilities:
 ```
 AUTONOMOUS_ANALYST_AGENT/
 │
-├── data/                        # Raw data files from web Tiki(.parquet)
+├── data/                        # Raw data files from web Tiki (.parquet)
 ├── flow/                        # Image flow (.svg)
 ├── src/
 │   ├── agents/                  # Core LangGraph agent logic
@@ -121,25 +121,24 @@ AUTONOMOUS_ANALYST_AGENT/
 │   │   ├── supervisor_agent.py
 │   │   └── ingest_full_tiki_graph.py
 │   │
-│   └── backend/                 # FastAPI Backend
-│   │    └── app/
+│   ├── backend/                 # FastAPI Backend
+│   │   └── app/
 │   │       ├── api/endpoints/   # API Route declarations (message, user)
-│   │        ├── auth/           # JWT authentication logic
-│   │        ├── db/             # Database connection configuration
-│   │        ├── models/         # Pydantic/SQLAlchemy Models
-│   │        ├── schemas/        # API Request/Response Schemas
-│   │        └── main.py         # FastAPI Server entry point
+│   │       ├── auth/            # JWT authentication logic
+│   │       ├── db/              # Database connection configuration
+│   │       ├── models/          # Pydantic/SQLAlchemy Models
+│   │       ├── schemas/         # API Request/Response Schemas
+│   │       └── main.py          # FastAPI Server entry point
 │   │
-│   └── frontend/                # Interface
-│       └── index.html
-│        └── script.js
-│        └── style.css
+│   └── frontend/                # User Interface
+│       ├── index.html
+│       ├── script.js
+│       └── style.css
 │
-│
-├── .env.example                # examplae about .env
-├── docker-compose.yml          # Orchestrates Neo4j & AI Backend
-├── Dockerfile                  # Python Backend packaging (Debian 12 slim)
-├── requirements.txt            # Library list
+├── .env.example                 # Example configuration file
+├── docker-compose.yml           # Orchestrates Neo4j & AI Backend
+├── Dockerfile                   # Python Backend packaging (Debian 12 slim)
+├── requirements.txt             # Library list
 └── README.md
 ```
 
@@ -166,7 +165,7 @@ git clone https://github.com/huyquangtruong05/Autonomous-Analyst-Agent.git
 ```
 ### 🔑 Step 2: Declare Environment Variables
 
-Create a file named `.env` in the project root directory and add the following ( Note : you must read files Dockerfile and docker-compose.yml to set up file .env):
+Create a file named `.env` in the project root directory and add the following ( Note : you must read files Dockerfile and docker-compose.yml to set up file .env, there must be compatibility between the .env file and the Docker files.):
 
 ```env
 # --- NEO4J DATABASE CONFIG ---
@@ -196,7 +195,7 @@ docker-compose run --rm ai_backend python src/agents/ingest_full_tiki_graph.py
 - Reads data from Parquet files
 - Generates vector embeddings
 - Creates the vector index
-#### 🐙 Notes :
+#### 🐙 Notes:
 - You can use the username and password you set up in the .env file to log in to the tiki_neo4j port to view the data graphs after loading them into Neo4j.
 
 #### ⏱️ Estimated time: 5–10 minutes
@@ -221,4 +220,10 @@ http://localhost:8000/docs
 - Generate a token via the auth module
 - Call the /api/v1/chat endpoint
 - Interact with the multi-agent system
-- You can open the .html file using the Live Server in Visual Studio Code to test the frontend connection to the backend (fetched APIs already).
+  
+### 🖥️ Step 6: Launch the User Interface
+To interact with the agent via the web interface:
+
+1. Open the src/frontend/ folder in Visual Studio Code.
+2. Right-click on index.html and select "Open with Live Server".
+3. The UI will launch in your browser, automatically fetching data from the running FastAPI backend.
