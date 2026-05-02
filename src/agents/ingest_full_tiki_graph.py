@@ -73,7 +73,6 @@ class TikiEnterpriseGraph:
 
         # 3. Review (VECTOR EMBEDDING)
         print("\n[BẮT ĐẦU NẠP VÀ NHÚNG VECTOR BẰNG LOCAL CPU/GPU]")
-        # --- TỐI ƯU 1: GIẢM BATCH_SIZE CỦA NEO4J XUỐNG 250 ĐỂ TRÁNH TRÀN RAM ---
         self._merge_nodes(folder, 'review', 'Review', 'review_id', 
                           "n.content = row.review_content, n.rating = toFloat(row.rating_score), n.thank_count = toInteger(row.thank_count), n.review_time = row.review_time, n.usage_duration = row.usage_duration",
                           embed_col='review_content', batch_size=250)
@@ -112,13 +111,11 @@ class TikiEnterpriseGraph:
                 if embed_col and embeddings_model:
                     print(f"  [Local AI] Đang tính toán Vector cho {len(batch)} đánh giá...")
                     texts_to_embed = [str(row.get(embed_col, "")) for row in batch]
-                    # HuggingFace sẽ nhúng 128 câu cùng lúc nhờ encode_kwargs ở trên
                     vectors = embeddings_model.embed_documents(texts_to_embed)
                     
                     for j, row in enumerate(batch):
                         row['embedding'] = vectors[j]
 
-                # Gửi gói dữ liệu nhỏ (250 dòng) vào Neo4j, an toàn tuyệt đối cho RAM
                 self.run_cypher(query, {"rows": batch})
                 print(f"+ Đã lưu vào Neo4j lô: {i} -> {i + len(batch)} / {total}")
 
