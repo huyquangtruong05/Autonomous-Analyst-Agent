@@ -86,8 +86,6 @@ class TikiEnterpriseGraph:
             embeddings_model = None
             if embed_col:
                 print("   -> Đang tải mô hình NLP về máy (Đã được cấu hình tăng tốc)...")
-                # --- TỐI ƯU 2: ÉP HUGGINGFACE CHẠY LÔ 128 ĐỂ TĂNG TỐC ĐỘ ĐỌC ---
-                # (Sẽ tự động dùng GPU nếu máy bạn có cài đặt CUDA)
                 embeddings_model = HuggingFaceEmbeddings(
                     model_name="paraphrase-multilingual-MiniLM-L12-v2",
                     encode_kwargs={'batch_size': 128} 
